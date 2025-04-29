@@ -43,6 +43,16 @@ const hideNavBar = () => {
 	navBar.style.pointerEvents = "auto";
 };
 
+const queryLinkHelper = (links, ariaLabel) => {
+	return Array.from(links).find((link) =>
+		link.getAttribute("aria-label")?.toLowerCase().includes(ariaLabel)
+	);
+};
+
+const queryProfileLink = () => {
+	return document.querySelector('a[aria-label$="Timeline"]');
+};
+
 const getUserProfile = () => {
 	const profileButton = [
 		...document.querySelectorAll('div[role="button"]'),
@@ -58,7 +68,7 @@ const getUserProfile = () => {
 };
 
 const getUserFullName = () => {
-	const profileLink = document.querySelector('a[aria-label$="Timeline"]');
+	const profileLink = queryProfileLink();
 	const ariaLabel = profileLink?.getAttribute("aria-label");
 	const name = ariaLabel?.split("'s")[0]; // => "Bao Duong"
 	console.log(name);
@@ -97,14 +107,12 @@ const replaceNavBar = () => {
 			style="border:none; padding: 0px 10px; font-size: 0.8rem; width: 30vw; max-width: 400px; height: 30px; outline: none">
 	</div>
 	<div style="display: flex; align-items: center; gap: 18px; font-size: 0.8rem;">
-        <div style="display: flex; gap: 8px; align-items: center; justify-content: center;">
-	<a href="/me" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: white;">
-		<img src="${avatarUrl}" alt="avatar" style="height: 28px; width: 28px; border-radius: 50%; object-fit: cover;">
-		<span style="font-weight: 500;">${getUserFullName()}</span>
-	</a>
-</div>
+        <div action="profile" style="display: flex; gap: 8px; align-items: center; justify-content: center;">
+            <img src="${avatarUrl}" alt="avatar" style="height: 28px; width: 28px; object-fit: cover;">
+            <span style="">${getUserFullName()}</span>
+        </div>
 
-		<a href="/home"  style="color: white">Home</a>
+		<div action="home" style="color: white">Home</div>
 		<span title="Friends">👥</span>
 		<span title="Messages">💬</span>
 		<span title="Notifications">🔔</span>
@@ -112,6 +120,36 @@ const replaceNavBar = () => {
 		<span title="Menu">▾</span>
 	</div>
 `;
+
+	// search action
+	const actions = {
+		profile: () => {
+			console.log("👤 Về trang cá nhân");
+			const profileButton = queryProfileLink();
+			profileButton?.click();
+		},
+		home: () => {
+			queryLinkHelper(links, "home")?.click();
+			console.log("🏠 Về trang chủ");
+		},
+	};
+
+	fbNavClone.querySelectorAll("div[action]").forEach((el) => {
+		const action = el.getAttribute("action");
+		// add hover
+		el.addEventListener("mouseenter", () => {
+			el.style.cursor = "pointer";
+			el.style.color = "rgba(255, 255, 255, 0.8)";
+		});
+		el.addEventListener("mouseleave", () => {
+			el.style.cursor = "default";
+			el.style.color = "white";
+		});
+		el.addEventListener("click", (e) => {
+			e.stopPropagation();
+			actions[action]?.();
+		});
+	});
 
 	document.body.appendChild(fbNavClone);
 };
