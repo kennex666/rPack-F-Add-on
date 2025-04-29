@@ -75,6 +75,14 @@ const getUserFullName = () => {
 	return name;
 };
 
+const navBarVisibility = (state) => {
+	const fbNav = navBar;
+	if (fbNav) {
+		fbNav.style.opacity = state ? "1" : "0";
+		fbNav.style.pointerEvents = state ? "auto" : "none";
+	}
+};
+
 const replaceNavBar = () => {
 	const bounding = getNavBarFull();
 	const avatarUrl = getUserProfile();
@@ -103,16 +111,16 @@ const replaceNavBar = () => {
 	fbNavClone.innerHTML = `
 	<div style="display: flex; align-items: center; justify-content:center; gap: 12px;">
 		<img style="height: 29px; width: 29px;" src="${logoFb}" >
-		<input type="text" placeholder="Search Facebook" 
+		<input custom-handler="search" type="text" placeholder="Search" 
 			style="border:none; padding: 0px 10px; font-size: 0.8rem; width: 30vw; max-width: 400px; height: 30px; outline: none">
 	</div>
 	<div style="display: flex; align-items: center; gap: 18px; font-size: 0.8rem;">
-        <div action="profile" style="display: flex; gap: 8px; align-items: center; justify-content: center;">
+        <div custom-action="profile" style="display: flex; gap: 8px; align-items: center; justify-content: center;">
             <img src="${avatarUrl}" alt="avatar" style="height: 28px; width: 28px; object-fit: cover;">
             <span style="">${getUserFullName()}</span>
         </div>
 
-		<div action="home" style="color: white">Home</div>
+		<div custom-action="home" style="color: white">Home</div>
 		<span title="Friends">👥</span>
 		<span title="Messages">💬</span>
 		<span title="Notifications">🔔</span>
@@ -132,10 +140,64 @@ const replaceNavBar = () => {
 			queryLinkHelper(links, "home")?.click();
 			console.log("🏠 Về trang chủ");
 		},
+		search: () => {
+			const searchInput = document.querySelector('[type="search"]');
+		},
 	};
 
-	fbNavClone.querySelectorAll("div[action]").forEach((el) => {
-		const action = el.getAttribute("action");
+	const handlers = {
+		search: (inputOverlay) => {
+			const searchBarOriginal = document.querySelector('[type="search"]');
+
+			if (!searchBarOriginal) return;
+
+			// Lấy setter gốc của .value
+			const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+				window.HTMLInputElement.prototype,
+				"value"
+			).set;
+
+			const syncInput = () => {
+				requestAnimationFrame(() => {
+					searchBarOriginal.click();
+
+					nativeInputValueSetter.call(
+						searchBarOriginal,
+						inputOverlay.value
+					);
+
+					searchBarOriginal.dispatchEvent(
+						new Event("input", { bubbles: true })
+					);
+					searchBarOriginal.dispatchEvent(
+						new KeyboardEvent("keyup", {
+							bubbles: true,
+							key: inputOverlay.value.slice(-1) || "a",
+						})
+					);
+				});
+			};
+
+			inputOverlay.addEventListener("keyup", syncInput);
+			inputOverlay.addEventListener("focus", () => {
+				navBarVisibility(true);
+                setTimeout(() => {
+                    requestAnimationFrame(() => {
+                        searchBarOriginal.click();
+                    });
+                }, 200);
+			});
+			inputOverlay.addEventListener("blur", () => {
+                searchBarOriginal.blur();
+                setTimeout(() => {
+				    navBarVisibility(false);
+                }, 100);
+			});
+		},
+	};
+
+	fbNavClone.querySelectorAll("[custom-action]").forEach((el) => {
+		const action = el.getAttribute("custom-action");
 		// add hover
 		el.addEventListener("mouseenter", () => {
 			el.style.cursor = "pointer";
@@ -149,6 +211,13 @@ const replaceNavBar = () => {
 			e.stopPropagation();
 			actions[action]?.();
 		});
+	});
+
+	// custom-handle
+	fbNavClone.querySelectorAll("[custom-handler]").forEach((el) => {
+		const action = el.getAttribute("custom-handler");
+		// add hover
+		handlers[action]?.(el);
 	});
 
 	document.body.appendChild(fbNavClone);
