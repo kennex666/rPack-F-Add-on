@@ -12,7 +12,7 @@ rPack-F is a lightweight userscript that brings back a retro-style Facebook UI. 
 👉 Tampermonkey
 
 2. Click this link to install the script:
-👉 Install rPack-F script [here](https://github.com/kennex666/rPack-F-Add-on/blob/main/fbretro.user.js)
+👉 Install rPack-F script [here](https://github.com/kennex666/rPack-F-Add-on/raw/refs/heads/main/fbretro.user.js)
 
 3. Done! Open Facebook and enjoy the classic, retro-style interface.
 

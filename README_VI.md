@@ -14,7 +14,7 @@ rPack-F là một Userscript nhẹ giúp anh em "retro hoá" giao diện Faceboo
 
 2. Nhấn vào link sau để cài Userscript:
 
-👉 Cài ngay script rPack-F [tại đây](https://github.com/kennex666/rPack-F-Add-on/blob/main/fbretro.user.js)
+👉 Cài ngay script rPack-F [tại đây](https://github.com/kennex666/rPack-F-Add-on/raw/refs/heads/main/fbretro.user.js)
 
 3. Hoàn tất! Mở lại Facebook và cảm nhận giao diện cổ điển đầy thân quen.
 
