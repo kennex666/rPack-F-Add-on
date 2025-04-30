@@ -1,5 +1,6 @@
 const navBar = document.querySelector('div[role="banner"]');
 const links = navBar.querySelectorAll("a[role='link']");
+var lastPath = "unknown";
 
 const rootLinks = Array.from(links).map((link) => link.closest("li"));
 
@@ -14,10 +15,14 @@ const childrenButtons = Array.from(leftBar).flatMap((button) =>
 const notificationButton = document.querySelector(
 	'[aria-label="Notifications"]'
 );
+const messengerButton = document.querySelector(
+	'[aria-label="Messenger"]'
+);
 
 // search action
 const toggles = {
 	notifications: false,
+	messenger: false,
 };
 
 const getNavBarFull = () => {
@@ -92,7 +97,7 @@ const navBarVisibility = (state) => {
 	}
 };
 
-const listenNotificationOpen = () => {
+const listenModel = () => {
 	if (notificationButton) {
 		const observer = new MutationObserver((mutationsList) => {
 			for (const mutation of mutationsList) {
@@ -107,13 +112,45 @@ const listenNotificationOpen = () => {
 					if (expanded === "false") {
 						console.log("🔕 Đóng thông báo rồi!");
 						navBarVisibility(false);
-						toggles.notifications = !toggles.notifications;
+						toggles.notifications = false;
+					} else {
+						navBarVisibility(true);
+						toggles.notifications = true;
 					}
 				}
 			}
 		});
 
 		observer.observe(notificationButton, {
+			attributes: true,
+			attributeFilter: ["aria-expanded"],
+		});
+	}
+
+	if (messengerButton) {
+		const observer = new MutationObserver((mutationsList) => {
+			for (const mutation of mutationsList) {
+				if (
+					mutation.type === "attributes" &&
+					mutation.attributeName === "aria-expanded"
+				) {
+					const expanded =
+						messengerButton.getAttribute("aria-expanded");
+					console.log("📌 Messenger mở ra?", expanded === "true");
+
+					if (expanded === "false") {
+						console.log("🔕 Đóng Messenger rồi!");
+						navBarVisibility(false);
+						toggles.messenger = false;
+					} else {
+						navBarVisibility(true);
+						toggles.messenger = true;
+					}
+				}
+			}
+		});
+
+		observer.observe(messengerButton, {
 			attributes: true,
 			attributeFilter: ["aria-expanded"],
 		});
@@ -168,7 +205,7 @@ const replaceNavBar = () => {
 		<div custom-action="friend" title="Friends" style="display: flex; align-items: center; justify-content: center;">
             <img src="${friendIco}" alt="friend" style="height: 24px; width: 24px; object-fit: cover; padding-top: 3px">
         </div>
-		<div title="Messages" style="display: flex; align-items: center; justify-content: center;">
+		<div custom-action="messenger" title="Messages" style="display: flex; align-items: center; justify-content: center;">
             <img src="${messageIco}" alt="message" style="height: 24px; width: 24px; object-fit: cover;">
         </div>
 		<div custom-action="notifications" title="Notifications" style="display: flex; align-items: center; justify-content: center;">
@@ -193,19 +230,15 @@ const replaceNavBar = () => {
 		},
 		notifications: () => {
 			if (!toggles.notifications) {
-				navBarVisibility(true);
-				setTimeout(() => {
-					notificationButton?.click();
-				}, 100);
-				console.log("🔔 Về thông báo");
-			} else {
-				navBarVisibility(false);
-				setTimeout(() => {
-					notificationButton?.click();
-				}, 100);
+				notificationButton?.click();
 			}
-			toggles.notifications = !toggles.notifications;
 		},
+		messenger: () => {
+			if (!toggles.messenger){
+				messengerButton?.click();
+			}
+		},
+
 	};
 
 	const handlers = {
@@ -286,15 +319,16 @@ const replaceNavBar = () => {
 	document.body.appendChild(fbNavClone);
 };
 
-
 const shortcutNavBar = () => {
-	const shortcutNavBar = document.querySelector("[aria-label='Shortcuts'][role='navigation']");
+	const shortcutNavBar = document.querySelector(
+		"[aria-label='Shortcuts'][role='navigation']"
+	);
 	shortcutNavBar.classList.add("retro-shortcut-nav");
-	
+
 	addStyle(`
 		.retro-shortcut-nav{
-			width: 10vw !important;
-		max-width: 15vw !important;
+			width: 15vw !important;
+			max-width: 15vw !important;
 		}
 	.retro-shortcut-nav * {
 		border-radius: 0 !important;
@@ -312,7 +346,7 @@ const shortcutNavBar = () => {
 
 	}
 	.retro-shortcut-nav{
-		margin-left: 10px !important;
+		margin-left: 15px !important;
 	}
 		
 	div[role="separator"] {
@@ -324,7 +358,6 @@ const shortcutNavBar = () => {
 	}
 	`);
 
-	
 	if (shortcutNavBar) {
 		// find all li
 		const shortcutItems = shortcutNavBar.querySelectorAll("li");
@@ -395,7 +428,45 @@ const shortcutNavBar = () => {
 			item.style.fontSize = "0.8rem";
 		});
 	}
-}
+};
+
+const listenChangePath = () => {
+	setInterval(() => {
+		const newPath = location.pathname;
+		if (newPath !== lastPath) {
+			lastPath = newPath;
+
+			console.log("🔁 Path changed to:", newPath);
+
+			// Ví dụ: thêm class cho main khi ở home
+			const mainEl = document.querySelector("div[role='main']");
+			if (mainEl) {
+				mainEl.classList.toggle("mainPost", newPath === "/");
+			}
+		}
+	}, 300); // check mỗi 300ms
+};
+
+const listenDomUpdateOnly = () => {
+	const observer = new MutationObserver((mutations) => {
+		mutations.forEach((mutation) => {
+			if (mutation.type === "childList") {
+				// Kiểm tra xem có thay đổi trong DOM không
+				if (mutation.addedNodes.length > 0) {
+					console.log("DOM đã thay đổi");
+					// Remove tròn bo góc hình
+					document.querySelectorAll("mask").forEach((img) => {
+						img.remove();
+					});
+					// circle
+					document.querySelectorAll("circle").forEach((img) => {
+						img.remove();
+					});
+				}
+			}
+		});
+	});
+};
 
 const addStyle = (css) => {
 	const style = document.createElement("style");
@@ -452,11 +523,22 @@ const init = () => {
         [role="button"], [role="button"] *, [role="link"], [role="link"] *, [role="dialog"], [role="dialog"] *, [role="menu"], [role="menu"] *, [role="listbox"], [role="listbox"] * {
             border-radius: 0 !important;
         }
+		.mainPost{
+			margin: 0 !important;
+			padding: 0 !important;
+			justify-content: start;
+			width: fit-content;
+		}	
+		[role="complementary"] {
+			border: 1px solid #ccc !important;
+		}
     `);
 	hideNavBar();
 	replaceNavBar();
-    listenNotificationOpen();
+	listenModel();
 	shortcutNavBar();
+	listenChangePath();
+	listenDomUpdateOnly();
 };
 
 init();
