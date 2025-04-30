@@ -1,4 +1,7 @@
 # 💾 rPack-F (Facebook Retro)
+Read English version [here](README.md)
+> [!IMPORTANT]  
+> Script CHỈ hoạt động với giao diện Facebook tiếng Anh (EN-US)
 
 ## Giới thiệu
 Trải nghiệm lại giao diện Facebook ngày xưa 201x – đơn giản, gọn gàng, hoài niệm.
