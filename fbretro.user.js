@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Facebook Retro
 // @namespace    http://1boxstudios.com/
-// @version      1.0.0
+// @version      1.0.1
 // @description  Facebook Retro UI (201x)
 // @author       Kennex666
 // @match        https://*.facebook.com/*
@@ -27,11 +27,16 @@
 	const childrenButtons = Array.from(leftBar).flatMap((button) =>
 		Array.from(button.children)
 	);
-
-	const notificationButton = document.querySelector(
-		'[aria-label="Notifications"]'
+	
+	const allButtonFacebook = Array.from(document.querySelectorAll('div[role="button"]'));
+	
+	const notificationButton = allButtonFacebook.find(btn =>
+		btn.getAttribute("aria-label").includes('Notifications') || btn.getAttribute("aria-label").match(/Notifications,? \d+/)
 	);
-	const messengerButton = document.querySelector('[aria-label="Messenger"]');
+	
+	const messengerButton = allButtonFacebook.find(btn =>
+		btn.getAttribute("aria-label").includes('Messenger') || btn.getAttribute("aria-label").match(/Messenger,? \d+/)
+	);
 
 	const yourProfileButton = document.querySelector(
 		'[aria-label="Your profile"]'
@@ -119,100 +124,59 @@
 		}
 	};
 
-	const listenModel = () => {
-		if (notificationButton) {
-			const observer = new MutationObserver((mutationsList) => {
-				for (const mutation of mutationsList) {
-					if (
-						mutation.type === "attributes" &&
-						mutation.attributeName === "aria-expanded"
-					) {
-						const expanded =
-							notificationButton.getAttribute("aria-expanded");
-						console.log(
-							"📌 Notifications mở ra?",
-							expanded === "true"
-						);
+	function getCountNotification(button) {
+		// Nếu có aria-label dạng "Notifications, 1 unread" thì lấy số
+		const ariaLabel = button.getAttribute("aria-label") || "";
+		const match = ariaLabel.match(/\b(\d+)\b/);
+		const count = match ? parseInt(match[1]) : 0;
+		return count;
+	}
 
-						if (expanded === "false") {
-							console.log("🔕 Đóng thông báo rồi!");
-							navBarVisibility(false);
-							toggles.notifications = false;
-						} else {
-							navBarVisibility(true);
-							toggles.notifications = true;
-						}
-					}
-				}
-			});
+	function observeToggle({ button, key, labelName, onToggle }) {
+		if (!button) return;
 
-			observer.observe(notificationButton, {
-				attributes: true,
-				attributeFilter: ["aria-expanded"],
-			});
-		}
+		const observer = new MutationObserver(() => {
+			const expanded = button.getAttribute("aria-expanded") === "true";
+			console.log(`📌 ${labelName} mở ra?`, expanded);
 
-		if (messengerButton) {
-			const observer = new MutationObserver((mutationsList) => {
-				for (const mutation of mutationsList) {
-					if (
-						mutation.type === "attributes" &&
-						mutation.attributeName === "aria-expanded"
-					) {
-						const expanded =
-							messengerButton.getAttribute("aria-expanded");
-						console.log("📌 Messenger mở ra?", expanded === "true");
+			// Bật/tắt UI
+			navBarVisibility(expanded);
+			toggles[key] = expanded;
 
-						if (expanded === "false") {
-							console.log("🔕 Đóng Messenger rồi!");
-							navBarVisibility(false);
-							toggles.messenger = false;
-						} else {
-							navBarVisibility(true);
-							toggles.messenger = true;
-						}
-					}
-				}
-			});
+			// Nếu có aria-label dạng "Notifications, 1 unread" thì lấy số
+			const count = getCountNotification(button);
 
-			observer.observe(messengerButton, {
-				attributes: true,
-				attributeFilter: ["aria-expanded"],
-			});
-		}
+			updateNotificationBadge(key, count);
 
-		if (yourProfileButton) {
-			const observer = new MutationObserver((mutationsList) => {
-				for (const mutation of mutationsList) {
-					if (
-						mutation.type === "attributes" &&
-						mutation.attributeName === "aria-expanded"
-					) {
-						const expanded =
-							yourProfileButton.getAttribute("aria-expanded");
-						console.log(
-							"📌 Your Profile mở ra?",
-							expanded === "true"
-						);
+			if (typeof onToggle === "function") onToggle(expanded, count);
+		});
 
-						if (expanded === "false") {
-							console.log("🔕 Đóng Your Profile rồi!");
-							navBarVisibility(false);
-							toggles.yourProfile = false;
-						} else {
-							navBarVisibility(true);
-							toggles.yourProfile = true;
-						}
-					}
-				}
-			});
+		observer.observe(button, {
+			attributes: true,
+			attributeFilter: ["aria-expanded", "aria-label"],
+		});
+	}
 
-			observer.observe(yourProfileButton, {
-				attributes: true,
-				attributeFilter: ["aria-expanded"],
-			});
-		}
-	};
+	function listenModel() {
+		observeToggle({
+			button: notificationButton,
+			key: "notifications",
+			labelName: "Notifications",
+		});
+
+		observeToggle({
+			button: messengerButton,
+			key: "messenger",
+			labelName: "Messenger",
+		});
+
+		observeToggle({
+			button: yourProfileButton,
+			key: "yourProfile",
+			labelName: "Your Profile",
+		});
+	}
+
 
 	const replaceNavBar = () => {
 		const bounding = getNavBarFull();
@@ -262,12 +226,13 @@
 		<div custom-action="friend" title="Friends" style="display: flex; align-items: center; justify-content: center;">
             <img src="${friendIco}" alt="friend" style="height: 24px; width: 24px; object-fit: cover; padding-top: 3px">
         </div>
-		<div custom-action="messenger" title="Messages" style="display: flex; align-items: center; justify-content: center;">
-            <img src="${messageIco}" alt="message" style="height: 24px; width: 24px; object-fit: cover;">
-        </div>
-		<div custom-action="notifications" title="Notifications" style="display: flex; align-items: center; justify-content: center;">
-            <img src="${notifyIco}" alt="notify" style="height: 24px; width: 24px; object-fit: cover;">
-        </div>
+		<div custom-action="messenger" title="Messages" style="position: relative; display: flex; align-items: center; justify-content: center;">
+			<img src="${messageIco}" alt="message" style="height: 24px; width: 24px; object-fit: cover;">
+		</div>
+		
+		<div custom-action="notifications" title="Notifications" style="position: relative; display: flex; align-items: center; justify-content: center;">
+			<img src="${notifyIco}" alt="notify" style="height: 24px; width: 24px; object-fit: cover;">
+		</div>
 		
 		<div custom-action="menu" title="Menu" style="display: flex; align-items: center; justify-content: center;">
 			<span title="Menu" style="font-size: 1.5rem; color: #31487a">▾</span>
@@ -383,7 +348,20 @@
 		});
 
 		document.body.appendChild(fbNavClone);
+		
+		notificationUpdate();
 	};
+
+	const notificationUpdate = () => {
+		updateNotificationBadge(
+			"messenger",
+			getCountNotification(messengerButton)
+		);
+		updateNotificationBadge(
+			"notifications",
+			getCountNotification(notificationButton)
+		)
+	}
 
 	const shortcutNavBar = () => {
 		const shortcutNavBar = document.querySelector(
@@ -536,6 +514,29 @@
 		style.appendChild(document.createTextNode(css));
 		document.head.appendChild(style);
 	};
+	
+	function updateNotificationBadge(key, count) {
+		console.log("🔔 Cập nhật badge thông báo:", key, count);
+		const wrapper = document.querySelector('[custom-action="' + key + '"]');
+
+		if (!wrapper) return;
+
+
+		let badge = wrapper.querySelector(".badge");
+
+		if (!badge) {
+			badge = document.createElement("span");
+			badge.className = "badge";
+			wrapper.appendChild(badge);
+		}
+
+		if (count > 0) {
+			badge.textContent = count > 99 ? "99+" : count;
+			badge.style.display = "flex";
+		} else {
+			badge.style.display = "none";
+		}
+	}
 	const init = () => {
 		// Chạy hàm này khi DOM đã được tải xong
 		console.log("🚀 Đã khởi động Retro");
@@ -594,6 +595,24 @@
 		[role="complementary"] {
 			border: 1px solid #ccc !important;
 		}
+		.badge {
+			position: absolute;
+			top: -1px;
+			right: -4px;
+			background-color: red;
+			color: white;
+			font-size: 8px;
+			width: 12px;
+			height: 12px;
+			justify-content: center;
+			align-items: center;
+			border-radius: 9999px;
+			line-height: 12px;
+			text-align: center;
+			font-weight: bold;
+			pointer-events: none;
+			user-select: none;
+		}
     `);
 		hideNavBar();
 		replaceNavBar();
@@ -602,6 +621,5 @@
 		listenChangePath();
 		listenDomUpdateOnly();
 	};
-
 	init();
 })();
