@@ -1,31 +1,31 @@
 # 💾 rPack-F (Facebook Retro)
-## Giới thiệu
-Trải nghiệm lại giao diện Facebook ngày xưa – đơn giản, gọn gàng, hoài niệm.
+> [Đọc bản tiếng Việt](README_VI.md)
+## Introduction
+Relive the old-school Facebook experience – clean, simple, and nostalgic.
 
-rPack-F là một Userscript nhẹ giúp anh em "retro hoá" giao diện Facebook hiện tại về kiểu cổ điển hơn. Rất thích hợp cho ai ghét giao diện mới rối rắm, nặng nề.
+rPack-F is a lightweight userscript that brings back a retro-style Facebook UI. Perfect for those who find the modern interface too cluttered and bloated.
 
-## Cài đặt nhanh
-1. Cài 1 trong 2 tiện ích chạy Userscript (chỉ cần cài 1 cái):
+## 🚀 Quick Installation
+1. Install one of these userscript managers (only one is needed):
 
 👉 Violentmonkey
-
 👉 Tampermonkey
 
-2 Nhấn vào link sau để cài Userscript:
+2. Click this link to install the script:
+👉 Install rPack-F script [here](https://github.com/kennex666/rPack-F-Add-on/blob/main/fbretro.user.js)
 
-(👉 Cài ngay script rPack-F tại đây)[test]
+3. Done! Open Facebook and enjoy the classic, retro-style interface.
 
-3. Hoàn tất! Mở lại Facebook và cảm nhận giao diện cổ điển đầy thân quen.
+## ⚠️ Important Notes
+Facebook frequently tests different UI layouts per account, so the script might not work consistently for everyone.
 
-## ⚠️ Lưu ý quan trọng
-Facebook thường xuyên thử nghiệm giao diện khác nhau cho từng tài khoản, nên hiệu quả của script có thể không đồng nhất với tất cả mọi người.
+The script works best with EN-US Facebook interface.
 
-Script hoạt động ổn định trên Facebook bản EN-US
+This userscript does not touch or track your data, it only changes how some UI elements are displayed.
 
-Script này không can thiệp vào dữ liệu người dùng, chỉ thay đổi một số thành phần giao diện để giúp "giản lược hóa" trải nghiệm.
+If Facebook changes their layout significantly, the script may stop working or require an update.
 
-Trong trường hợp Facebook cập nhật giao diện mới quá nhiều, script có thể hoạt động không ổn định hoặc cần update lại.
+## 🧾 Disclaimer
+This project is non-profit and community-driven, aimed at improving individual user experience on Facebook.
 
-## 🧾 Miễn trừ trách nhiệm
-Dự án này chỉ mang tính phi lợi nhuận, chia sẻ cộng đồng để cải thiện trải nghiệm cá nhân khi dùng Facebook.
-Tác giả không chịu trách nhiệm nếu có sự cố ngoài ý muốn do phía Facebook thay đổi hoặc do người dùng tự ý sửa đổi mã nguồn.
+The author is not responsible for any unexpected issues caused by Facebook changes or user modifications to the script.
