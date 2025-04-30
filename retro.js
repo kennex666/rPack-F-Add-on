@@ -363,6 +363,7 @@ const shortcutNavBar = () => {
 	const shortcutNavBar = document.querySelector(
 		"[aria-label='Shortcuts'][role='navigation']"
 	);
+	if (!shortcutNavBar) return;
 	shortcutNavBar.classList.add("retro-shortcut-nav");
 
 	addStyle(`
