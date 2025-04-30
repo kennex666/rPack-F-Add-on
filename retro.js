@@ -19,10 +19,13 @@ const messengerButton = document.querySelector(
 	'[aria-label="Messenger"]'
 );
 
+const yourProfileButton = document.querySelector('[aria-label="Your profile"]');
+
 // search action
 const toggles = {
 	notifications: false,
 	messenger: false,
+	yourProfile: false
 };
 
 const getNavBarFull = () => {
@@ -155,6 +158,35 @@ const listenModel = () => {
 			attributeFilter: ["aria-expanded"],
 		});
 	}
+
+	if (yourProfileButton) {
+		const observer = new MutationObserver((mutationsList) => {
+			for (const mutation of mutationsList) {
+				if (
+					mutation.type === "attributes" &&
+					mutation.attributeName === "aria-expanded"
+				) {
+					const expanded =
+						yourProfileButton.getAttribute("aria-expanded");
+					console.log("📌 Your Profile mở ra?", expanded === "true");
+
+					if (expanded === "false") {
+						console.log("🔕 Đóng Your Profile rồi!");
+						navBarVisibility(false);
+						toggles.yourProfile = false;
+					} else {
+						navBarVisibility(true);
+						toggles.yourProfile = true;
+					}
+				}
+			}
+		});
+
+		observer.observe(yourProfileButton, {
+			attributes: true,
+			attributeFilter: ["aria-expanded"],
+		});
+	}
 };
 
 const replaceNavBar = () => {
@@ -191,7 +223,7 @@ const replaceNavBar = () => {
 
 	fbNavClone.innerHTML = `
 	<div style="display: flex; align-items: center; justify-content:center; gap: 12px;">
-		<img style="height: 29px; width: 29px;" src="${logoFb}" >
+		<a href="/"><img style="height: 29px; width: 29px;" src="${logoFb}" ></a>
 		<input custom-handler="search" type="text" placeholder="Search" 
 			style="border:none; padding: 0px 10px; font-size: 0.8rem; width: 30vw; max-width: 400px; height: 30px; outline: none">
 	</div>
@@ -211,7 +243,10 @@ const replaceNavBar = () => {
 		<div custom-action="notifications" title="Notifications" style="display: flex; align-items: center; justify-content: center;">
             <img src="${notifyIco}" alt="notify" style="height: 24px; width: 24px; object-fit: cover;">
         </div>
-		<span title="Menu" style="font-size: 1.5rem; color: #31487a">▾</span>
+		
+		<div custom-action="menu" title="Menu" style="display: flex; align-items: center; justify-content: center;">
+			<span title="Menu" style="font-size: 1.5rem; color: #31487a">▾</span>
+        </div>
 	</div>
 `;
 	const actions = {
@@ -234,11 +269,16 @@ const replaceNavBar = () => {
 			}
 		},
 		messenger: () => {
-			if (!toggles.messenger){
+			if (!toggles.messenger) {
 				messengerButton?.click();
 			}
 		},
 
+		menu: () => {
+			if (!toggles.yourProfile) {
+				yourProfileButton?.click();
+			}
+		}
 	};
 
 	const handlers = {
@@ -448,24 +488,15 @@ const listenChangePath = () => {
 };
 
 const listenDomUpdateOnly = () => {
-	const observer = new MutationObserver((mutations) => {
-		mutations.forEach((mutation) => {
-			if (mutation.type === "childList") {
-				// Kiểm tra xem có thay đổi trong DOM không
-				if (mutation.addedNodes.length > 0) {
-					console.log("DOM đã thay đổi");
-					// Remove tròn bo góc hình
-					document.querySelectorAll("mask").forEach((img) => {
-						img.remove();
-					});
-					// circle
-					document.querySelectorAll("circle").forEach((img) => {
-						img.remove();
-					});
-				}
-			}
+	return setInterval(() => {
+		document.querySelectorAll("mask").forEach((img) => {
+			img.remove();
 		});
-	});
+		// circle
+		document.querySelectorAll("circle").forEach((img) => {
+			img.remove();
+		});
+	}, 300); // check mỗi 300ms
 };
 
 const addStyle = (css) => {
