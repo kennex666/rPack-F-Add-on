@@ -27,7 +27,7 @@
 		shortcuts: "Shortcuts",
 	};
 
-	const navBar = document.querySelector(`div[role="${labelTags.banners}"]`);
+	const navBar = document.querySelector(`div[role="${labelTags.banner}"]`);
 	const links = navBar.querySelectorAll(`a[role='${labelTags.link}']`);
 	var lastPath = "unknown";
 
