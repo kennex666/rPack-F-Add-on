@@ -7,7 +7,7 @@
 // @match        https://*.facebook.com/*
 // @grant        none
 // @run-at       document-idle
-// @downloadURL  https://github.com/kennex666/facebook-retro-ui/raw/refs/heads/main/fbretro.user.js
+// @downloadURL  https://github.com/kennex666/rPack-F-Add-on/raw/refs/heads/main/fbretro.user.js
 
 // ==/UserScript==
 
