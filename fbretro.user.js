@@ -15,7 +15,7 @@
 	"use strict";
 
 	const labelTags = {
-		banners: "banners",
+		banner: "banner",
 		link: "link",
 		accountSettings: "Account Controls and Settings",
 		button: "button",
