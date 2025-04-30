@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Facebook Retro
 // @namespace    http://1boxstudios.com/
-// @version      1.0.1
+// @version      1.0.2
 // @description  Facebook Retro UI (201x)
 // @author       Kennex666
 // @match        https://*.facebook.com/*
