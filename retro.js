@@ -11,6 +11,15 @@ const childrenButtons = Array.from(leftBar).flatMap((button) =>
 	Array.from(button.children)
 );
 
+const notificationButton = document.querySelector(
+	'[aria-label="Notifications"]'
+);
+
+// search action
+const toggles = {
+	notifications: false,
+};
+
 const getNavBarFull = () => {
 	// Tính vùng bao phủ lớn nhất của tất cả phần tử con
 	const allElements = navBar.querySelectorAll("*");
@@ -83,6 +92,34 @@ const navBarVisibility = (state) => {
 	}
 };
 
+const listenNotificationOpen = () => {
+	if (notificationButton) {
+		const observer = new MutationObserver((mutationsList) => {
+			for (const mutation of mutationsList) {
+				if (
+					mutation.type === "attributes" &&
+					mutation.attributeName === "aria-expanded"
+				) {
+					const expanded =
+						notificationButton.getAttribute("aria-expanded");
+					console.log("📌 Notifications mở ra?", expanded === "true");
+
+					if (expanded === "false") {
+						console.log("🔕 Đóng thông báo rồi!");
+						navBarVisibility(false);
+						toggles.notifications = !toggles.notifications;
+					}
+				}
+			}
+		});
+
+		observer.observe(notificationButton, {
+			attributes: true,
+			attributeFilter: ["aria-expanded"],
+		});
+	}
+};
+
 const replaceNavBar = () => {
 	const bounding = getNavBarFull();
 	const avatarUrl = getUserProfile();
@@ -140,11 +177,6 @@ const replaceNavBar = () => {
 		<span title="Menu" style="font-size: 1.5rem; color: #31487a">▾</span>
 	</div>
 `;
-
-	// search action
-	const toggles = {
-		notifications: false,
-	};
 	const actions = {
 		profile: () => {
 			console.log("👤 Về trang cá nhân");
@@ -163,58 +195,12 @@ const replaceNavBar = () => {
 			if (!toggles.notifications) {
 				navBarVisibility(true);
 				setTimeout(() => {
-					const notificationButton = document.querySelector(
-						'[aria-label="Notifications"]'
-					);
 					notificationButton?.click();
-                    if (notificationButton) {
-						const observer = new MutationObserver(
-							(mutationsList) => {
-								for (const mutation of mutationsList) {
-									if (
-										mutation.type === "attributes" &&
-										mutation.attributeName ===
-											"aria-expanded"
-									) {
-										const expanded =
-											notificationButton.getAttribute(
-												"aria-expanded"
-											);
-										console.log(
-											"📌 Notifications mở ra?",
-											expanded === "true"
-										);
-
-										if (expanded === "false") {
-											console.log(
-												"🔕 Đóng thông báo rồi!"
-											);
-											navBarVisibility(false);
-											// remove observer
-											observer.disconnect();
-											toggles.notifications =
-												!toggles.notifications;
-										}
-									}
-								}
-							}
-						);
-
-						observer.observe(notificationButton, {
-							attributes: true,
-							attributeFilter: ["aria-expanded"],
-						});
-					}
 				}, 100);
 				console.log("🔔 Về thông báo");
-				// listen if this change  attribute aria-expanded="true" to false
-				
 			} else {
 				navBarVisibility(false);
 				setTimeout(() => {
-					const notificationButton = document.querySelector(
-						'[aria-label="Notifications"]'
-					);
 					notificationButton?.click();
 				}, 100);
 			}
@@ -300,6 +286,117 @@ const replaceNavBar = () => {
 	document.body.appendChild(fbNavClone);
 };
 
+
+const shortcutNavBar = () => {
+	const shortcutNavBar = document.querySelector("[aria-label='Shortcuts'][role='navigation']");
+	shortcutNavBar.classList.add("retro-shortcut-nav");
+	
+	addStyle(`
+		.retro-shortcut-nav{
+			width: 10vw !important;
+		max-width: 15vw !important;
+		}
+	.retro-shortcut-nav * {
+		border-radius: 0 !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		font-size: 0.8rem !important;
+		max-width: 15vw !important;
+	}
+		
+	.retro-shortcut-nav {
+		border-radius: 0 !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		font-size: 0.8rem !important;
+
+	}
+	.retro-shortcut-nav{
+		margin-left: 10px !important;
+	}
+		
+	div[role="separator"] {
+		padding-top: 6px !important;
+		margin-bottom: 9px !important;
+	}
+	.retro-shortcut-item div {
+		gap: 6px
+	}
+	`);
+
+	
+	if (shortcutNavBar) {
+		// find all li
+		const shortcutItems = shortcutNavBar.querySelectorAll("li");
+		shortcutItems.forEach((item) => {
+			const div = item.querySelector("div");
+			item.classList.add("retro-shortcut-item");
+		});
+
+		shortcutNavBar
+			.querySelectorAll("i[style*='background-image']")
+			.forEach((icon) => {
+				const targetSize = 24; // Kích thước muốn hiển thị
+				const originalSize = 36; // Kích thước gốc mỗi icon
+				const spriteHeight = 555; // Chiều cao toàn ảnh
+
+				const scale = targetSize / originalSize;
+
+				// Resize width/height
+				icon.style.width = `${targetSize}px`;
+				icon.style.height = `${targetSize}px`;
+
+				// Scale background-size (giữ tỷ lệ ảnh gốc)
+				icon.style.backgroundSize = `auto ${spriteHeight * scale}px`;
+
+				// Scale background-position để giữ đúng icon
+				const posMatch = icon.style.backgroundPosition.match(
+					/(-?\d+)px\s+(-?\d+)px/
+				);
+				if (posMatch) {
+					const posX = parseInt(posMatch[1]) * scale;
+					const posY = parseInt(posMatch[2]) * scale;
+					icon.style.backgroundPosition = `${posX}px ${posY}px`;
+				}
+			});
+
+		shortcutNavBar.querySelectorAll("img").forEach((img) => {
+			img.style.width = "24px";
+			img.style.height = "24px";
+			img.style.objectFit = "cover";
+		});
+
+		shortcutNavBar.querySelectorAll("image").forEach((img) => {
+			img.style.width = "24px";
+			img.style.height = "24px";
+			img.style.objectFit = "cover";
+		});
+
+		shortcutNavBar.querySelectorAll("mask").forEach((img) => {
+			img.remove();
+		});
+		// circle
+		shortcutNavBar.querySelectorAll("circle").forEach((img) => {
+			img.remove();
+		});
+
+		shortcutNavBar.querySelectorAll("svg").forEach((svg) => {
+			const closest = svg.closest("div");
+			if (closest) {
+				closest.style.width = "24px";
+				closest.style.height = "24px";
+			}
+			svg.style.width = "24px";
+			svg.style.height = "24px";
+			svg.style.objectFit = "cover";
+		});
+
+		shortcutNavBar.querySelectorAll("[role='button']").forEach((item) => {
+			item.style.fontSize = "0.8rem";
+		});
+	}
+}
+
 const addStyle = (css) => {
 	const style = document.createElement("style");
 	style.type = "text/css";
@@ -358,6 +455,8 @@ const init = () => {
     `);
 	hideNavBar();
 	replaceNavBar();
+    listenNotificationOpen();
+	shortcutNavBar();
 };
 
 init();
