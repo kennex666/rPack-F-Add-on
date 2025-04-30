@@ -1,16 +1,15 @@
 # 💾 rPack-F (Facebook Retro)
 
 ## Giới thiệu
-Trải nghiệm lại giao diện Facebook ngày xưa – đơn giản, gọn gàng, hoài niệm.
+Trải nghiệm lại giao diện Facebook ngày xưa 201x – đơn giản, gọn gàng, hoài niệm.
 
 rPack-F là một Userscript nhẹ giúp anh em "retro hoá" giao diện Facebook hiện tại về kiểu cổ điển hơn. Rất thích hợp cho ai ghét giao diện mới rối rắm, nặng nề.
 
 ## Cài đặt nhanh
 1. Cài 1 trong 2 tiện ích chạy Userscript (chỉ cần cài 1 cái):
 
-👉 Violentmonkey
-
-👉 Tampermonkey
+ - <a href="https://violentmonkey.github.io/get-it/" target="_blank" rel="noopener noreferrer">Violentmonkey</a>
+ - <a href="https://www.tampermonkey.net/" target="_blank" rel="noopener noreferrer">Tampermonkey</a>
 
 2. Nhấn vào link sau để cài Userscript:
 
