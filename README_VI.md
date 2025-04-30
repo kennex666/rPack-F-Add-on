@@ -21,7 +21,7 @@ rPack-F là một Userscript nhẹ giúp anh em "retro hoá" giao diện Faceboo
 ## ⚠️ Lưu ý quan trọng
 Facebook thường xuyên thử nghiệm giao diện khác nhau cho từng tài khoản, nên hiệu quả của script có thể không đồng nhất với tất cả mọi người.
 
-Script hoạt động ổn định trên Facebook bản EN-US
+Script hoạt động chỉ hoạt động trên Facebook bản EN-US
 
 Script này không can thiệp vào dữ liệu người dùng, chỉ thay đổi một số thành phần giao diện để giúp "giản lược hóa" trải nghiệm.
 

@@ -19,7 +19,7 @@ rPack-F is a lightweight userscript that brings back a retro-style Facebook UI. 
 ## ⚠️ Important Notes
 Facebook frequently tests different UI layouts per account, so the script might not work consistently for everyone.
 
-The script works best with EN-US Facebook interface.
+The script only works with EN-US Facebook interface.
 
 This userscript does not touch or track your data, it only changes how some UI elements are displayed.
 

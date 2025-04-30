@@ -14,32 +14,53 @@
 (function () {
 	"use strict";
 
-	const navBar = document.querySelector('div[role="banner"]');
-	const links = navBar.querySelectorAll("a[role='link']");
+	const labelTags = {
+		banners: "banners",
+		link: "link",
+		accountSettings: "Account Controls and Settings",
+		button: "button",
+		notifications: "Notifications",
+		messenger: "Messenger",
+		profile: "Your profile",
+		timeline: "Timeline",
+		navigation: "navigation",
+		shortcuts: "Shortcuts",
+	};
+
+	const navBar = document.querySelector(`div[role="${labelTags.banners}"]`);
+	const links = navBar.querySelectorAll(`a[role='${labelTags.link}']`);
 	var lastPath = "unknown";
 
 	const rootLinks = Array.from(links).map((link) => link.closest("li"));
 
 	const leftBar = navBar.querySelectorAll(
-		"div[aria-label='Account Controls and Settings']"
+		`div[aria-label='${labelTags.accountSettings}']`
 	);
 
 	const childrenButtons = Array.from(leftBar).flatMap((button) =>
 		Array.from(button.children)
 	);
 	
-	const allButtonFacebook = Array.from(document.querySelectorAll('div[role="button"]'));
-	
-	const notificationButton = allButtonFacebook.find(btn =>
-		btn.getAttribute("aria-label").includes('Notifications') || btn.getAttribute("aria-label").match(/Notifications,? \d+/)
+	const allButtonFacebook = Array.from(document.querySelectorAll(`div[role="${labelTags.button}"]`));
+
+	const notificationButton = allButtonFacebook.find(
+		(btn) =>
+			btn.getAttribute("aria-label").includes(labelTags.notifications) ||
+			btn
+				.getAttribute("aria-label")
+				.match(new RegExp(`${labelTags.notifications},?\\s*(\\d+)`))
 	);
 	
-	const messengerButton = allButtonFacebook.find(btn =>
-		btn.getAttribute("aria-label").includes('Messenger') || btn.getAttribute("aria-label").match(/Messenger,? \d+/)
+	const messengerButton = allButtonFacebook.find(
+		(btn) =>
+			btn.getAttribute("aria-label").includes(labelTags.messenger) ||
+			btn
+				.getAttribute("aria-label")
+				.match(new RegExp(`${labelTags.messenger},?\\s*(\\d+)`))
 	);
 
 	const yourProfileButton = document.querySelector(
-		'[aria-label="Your profile"]'
+		`[aria-label="${labelTags.profile}"]`
 	);
 
 	// search action
@@ -88,17 +109,17 @@
 	};
 
 	const queryProfileLink = () => {
-		return document.querySelector('a[aria-label$="Timeline"]');
+		return document.querySelector(`a[aria-label$="${labelTags.timeline}"]`);
 	};
 
 	const getUserProfile = () => {
 		const profileButton = [
-			...document.querySelectorAll('div[role="button"]'),
+			...document.querySelectorAll(`div[role="${labelTags.button}"]`),
 		].find((btn) =>
 			btn
 				.getAttribute("aria-label")
 				?.toLowerCase()
-				.includes("your profile")
+				.includes(labelTags.profile.toLowerCase())
 		);
 
 		const avatarImg = profileButton?.querySelector("image");
@@ -161,19 +182,19 @@
 		observeToggle({
 			button: notificationButton,
 			key: "notifications",
-			labelName: "Notifications",
+			labelName: labelTags.notifications,
 		});
 
 		observeToggle({
 			button: messengerButton,
 			key: "messenger",
-			labelName: "Messenger",
+			labelName: labelTags.messenger,
 		});
 
 		observeToggle({
 			button: yourProfileButton,
 			key: "yourProfile",
-			labelName: "Your Profile",
+			labelName: labelTags.profile,
 		});
 	}
 
@@ -365,7 +386,7 @@
 
 	const shortcutNavBar = () => {
 		const shortcutNavBar = document.querySelector(
-			"[aria-label='Shortcuts'][role='navigation']"
+			`[aria-label='${labelTags.shortcuts}'][role='${labelTags.navigation}']`
 		);
 		if (!shortcutNavBar) return;
 		shortcutNavBar.classList.add("retro-shortcut-nav");
@@ -472,7 +493,7 @@
 			});
 
 			shortcutNavBar
-				.querySelectorAll("[role='button']")
+				.querySelectorAll(`[role='${labelTags.button}']`)
 				.forEach((item) => {
 					item.style.fontSize = "0.8rem";
 				});
