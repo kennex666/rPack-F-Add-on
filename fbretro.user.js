@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Facebook Retro
 // @namespace    http://1boxstudios.com/
-// @version      1.0.3
+// @version      1.0.4
 // @description  Facebook Retro UI (201x)
 // @author       Kennex666
 // @match        https://*.facebook.com/*
@@ -209,6 +209,7 @@
 			top: `0px`,
 			left: `0px`,
 			width: `100dvw`,
+			max-height: "50px",
 			height: `${bounding.height - 15}px`,
 			backgroundColor: "#4B669D",
 			display: "flex",
