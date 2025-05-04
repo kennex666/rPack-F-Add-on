@@ -209,7 +209,7 @@
 			top: `0px`,
 			left: `0px`,
 			width: `100dvw`,
-			max-height: "50px",
+			maxHeight: "50px",
 			height: `${bounding.height - 15}px`,
 			backgroundColor: "#4B669D",
 			display: "flex",
