@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Facebook Retro
 // @namespace    http://1boxstudios.com/
-// @version      1.0.5
+// @version      1.0.6
 // @description  Facebook Retro UI (201x)
 // @author       Kennex666
 // @match        https://*.facebook.com/*
@@ -62,6 +62,16 @@
 	const yourProfileButton = document.querySelector(
 		`[aria-label="${labelTags.profile}"]`
 	);
+	
+	const facebookButton = document.querySelector('[aria-label="Facebook"][role="link"]');
+	
+	const getCloseButton = () => {
+		const banner = document.querySelector("div [role='banner']");
+		if (!banner)
+			return null;
+		
+		return banner.querySelector("div [aria-label='Close'][role='button']");
+	}
 
 	// search action
 	const toggles = {
@@ -234,7 +244,8 @@
 
 		fbNavClone.innerHTML = `
 	<div style="display: flex; align-items: center; justify-content:center; gap: 12px;">
-		<a href="/"><img style="height: 29px; width: 29px;" src="${logoFb}" ></a>
+		<div id="closeButton" custom-action="close" style="width: 27px; height: 27px; border-radius: 100%; display: none; justify-content: center; align-items: center; background-color: white; color: black; font-size: 15px;">❌</div>
+		<div custom-action="facebook"><img style="height: 29px; width: 29px;" src="${logoFb}" ></div>
 		<input custom-handler="search" type="text" placeholder="Search" 
 			style="border:none; padding: 0px 10px; font-size: 0.8rem; width: 30vw; max-width: 400px; height: 30px; outline: none">
 	</div>
@@ -291,6 +302,13 @@
 					yourProfileButton?.click();
 				}
 			},
+			close: () => {
+				const button = getCloseButton();
+				button?.click();
+			},
+			facebook: () => {
+				facebookButton?.click();
+			}
 		};
 
 		const handlers = {
@@ -506,7 +524,12 @@
 			const newPath = location.pathname;
 			if (newPath !== lastPath) {
 				lastPath = newPath;
-
+				const buttonClose = getCloseButton();
+				if (buttonClose && newPath !== "/"){
+					document.getElementById("closeButton").style.display = "flex";
+				} else {
+					document.getElementById("closeButton").style.display = "none";
+				}
 				console.log("🔁 Path changed to:", newPath);
 
 				// Ví dụ: thêm class cho main khi ở home
